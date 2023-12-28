@@ -1,0 +1,65 @@
+
+//+------------------------------------------------------------------+
+//| Smart Price Action Concepts MT5                                   |
+//| Expert advisor for MT5                                           |
+//| Developed by Forex Robot Easy Team (forexroboteasy.com)          |
+//+------------------------------------------------------------------+
+#property copyright 'Forex Robot Easy Team (forexroboteasy.com)'
+#property link      'forexroboteasy.com'
+
+// Indicator parameters
+input int IndicatorPeriod = 14; // Period for the indicators
+input int MovingAveragePeriod = 50; // Period for the moving average
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Attach indicators
+   int indicatorHandle = iCustom(_Symbol, _Period, 'InnerCircleTrader', IndicatorPeriod);
+   int movingAverageHandle = iMA(_Symbol, _Period, MovingAveragePeriod, 0, MODE_SMA, PRICE_CLOSE);
+   
+   if(indicatorHandle == INVALID_HANDLE || movingAverageHandle == INVALID_HANDLE)
+   {
+      Print('Failed to attach indicators! Please check the indicator names and parameters.');
+      return INIT_FAILED;
+   }
+   
+   // Set up indicator buffers
+   SetIndexBuffer(0, indicatorHandle);
+   SetIndexBuffer(1, movingAverageHandle);
+   
+   return INIT_SUCCEEDED;
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator iteration function                              |
+//+------------------------------------------------------------------+
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime& time[],
+                const double& open[],
+                const double& high[],
+                const double& low[],
+                const double& close[],
+                const long& tick_volume[],
+                const long& volume[],
+                const int& spread[])
+{
+   // Calculate indicator values
+   int startBar = prev_calculated - 1;
+   int endBar = rates_total - 1;
+   
+   for(int bar = startBar; bar <= endBar; bar++)
+   {
+      double indicatorValue = iCustom(NULL, 0, 'InnerCircleTrader', IndicatorPeriod, bar);
+      double movingAverageValue = iMA(NULL, 0, MovingAveragePeriod, 0, MODE_SMA, PRICE_CLOSE, bar);
+      
+      // Perform trading analysis using indicator values
+      // ...
+      // ...
+   }
+   
+   return rates_total;
+}
